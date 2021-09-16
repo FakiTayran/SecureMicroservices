@@ -1,3 +1,7 @@
+using AspNetCore.Identity.Dapper;
+using AspNetCore.Identity.Dapper.Models;
+using AspNetCore.Identity.DatabaseScripts.DbUp;
+using IdentityServer4;
 using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.Dapper.Storage;
 using IdentityServer4.Dapper.Storage.DataLayer;
@@ -25,7 +29,6 @@ namespace IdentityServer
     {
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        private object UpgradeDatabase;
 
         public Startup(IConfiguration configuration)
         {
@@ -36,6 +39,30 @@ namespace IdentityServer
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = Configuration.GetConnectionString(name: "DefaultConnection");
+
+
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            {
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = true;
+
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = true;
+            })
+                  .AddDapperStores(options =>
+                  {
+                      options.ConnectionString = connectionString;
+                      options.DbSchema = "dbo";
+                  });
+
+            services.AddIdentityDbUpDatabaseScripts(options => {
+                options.ConnectionString = connectionString;
+                options.DbSchema = "dbo";
+            });
+
             services.AddIdentityServer(options =>
             {
                 options.Events.RaiseErrorEvents = true;
@@ -44,6 +71,7 @@ namespace IdentityServer
                 options.Events.RaiseSuccessEvents = true;
                 options.IssuerUri ="https://localhost:5005";
             })
+                .AddAspNetIdentity<ApplicationUser>()
                 .AddDeveloperSigningCredential()
                 .AddInMemoryClients(Config.Clients)
                 .AddInMemoryApiResources(Config.ApiResource)
@@ -70,7 +98,7 @@ namespace IdentityServer
                  options.ApiSecret = "scopesecret";
                  options.RequireHttpsMetadata = false;
              });
-            //services.AddAuthorization();
+            services.AddAuthorization();
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
@@ -82,26 +110,32 @@ namespace IdentityServer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IIdentityServerMigrations identityServerMigrations, IClientProvider _clientProvider,IApiResourceProvider _apiResourceProvider, IApiScopesProvider _apiScopesProvider)
         {
-            //identityServerMigrations.UpgradeDatabase(true);
-            //_clientProvider.AddAsync(new Client
-            //{
-            //    ClientId = "movieclient2",
-            //    ClientName = "movieApi2",
-            //    AllowedGrantTypes = GrantTypes.ClientCredentials, // it is used by clients to obtain an access token outside of the context of a user
-            //    ClientSecrets =
-            //        {
-            //            new Secret("secret2".Sha256())  //client aware of this value
-            //        },
-            //    AllowedScopes = { "movieapi.read" },
-            //    AccessTokenType = AccessTokenType.Reference,
-            //});
+            //var connectionString = Configuration.GetConnectionString(name: "DefaultConnection");
+            //var identityMigrations = new AspNetCore.Identity.DatabaseScripts.DbUp.Migrations(connectionString, "dbo");
+            //var identityResult = identityMigrations.UpgradeDatabase();
+            identityServerMigrations.UpgradeDatabase(true);
+            _clientProvider.AddAsync(new Client
+            {
+                ClientId = "movieclient2",
+                ClientName = "movieApi2",
+                AllowedGrantTypes = GrantTypes.ResourceOwnerPassword, // it is used by clients to obtain an access token outside of the context of a user
+                AllowedScopes = {
+                         "movieapi.read",
+                         IdentityServerConstants.StandardScopes.OpenId,
+                         IdentityServerConstants.StandardScopes.Profile
+                     },
+                AccessTokenType = AccessTokenType.Reference,
+                RequireConsent = false,
+                RequireClientSecret = false,
+                
+            });
             //_apiResourceProvider.AddAsync(new ApiResource("movieapi")
             //{
             //    Scopes = new List<string> { "movieapi.read", "movieapi.write" },
             //    ApiSecrets = new List<Secret> { new Secret("scopesecret".Sha256()) }, //client aware of this value
             //    UserClaims = new List<string> { "role" }
             //});
-            
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

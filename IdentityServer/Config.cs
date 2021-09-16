@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Models;
+﻿using IdentityServer4;
+using IdentityServer4.Models;
 using IdentityServer4.Test;
 using System;
 using System.Collections.Generic;
@@ -28,13 +29,18 @@ namespace IdentityServer
                 {
                     ClientId ="movieclient2",
                     ClientName="movieApi2",
-                    AllowedGrantTypes = GrantTypes.ClientCredentials, // it is used by clients to obtain an access token outside of the context of a user
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword, // it is used by clients to obtain an access token outside of the context of a user
                     ClientSecrets =
                     {
                         new Secret("secret2".Sha256())  //Client aware of this value
                     },
-                    AllowedScopes = {"movieapi.read"},
-                    AccessTokenType = AccessTokenType.Reference
+                    AllowedScopes = {
+                         "movieapi.read",
+                         IdentityServerConstants.StandardScopes.OpenId,
+                         IdentityServerConstants.StandardScopes.Profile
+                     },
+                    AccessTokenType = AccessTokenType.Reference,
+                    RequireConsent = false
                 }
             };
         public static IEnumerable<ApiScope> ApiScopes => new ApiScope[]
