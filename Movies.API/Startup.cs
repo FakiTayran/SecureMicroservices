@@ -60,13 +60,13 @@ namespace Movies.API
             //     options.ClientId = "movieClient2";
             //     options.ClientSecret = "secret2";
             // });
-            services.AddAuthorization();
+            //services.AddAuthorization();
 
-            //services.AddAuthorization(x =>
-            //{
-            //    x.AddPolicy("read", policy => policy.RequireClaim("scope", "movieapi.read"));
-            //    x.AddPolicy("write", policy => policy.RequireClaim("scope", "movieapi.write"));
-            //});
+            services.AddAuthorization(x =>
+            {
+                x.AddPolicy("read", policy => policy.RequireClaim("scope", "movieapi.read"));
+                x.AddPolicy("write", policy => policy.RequireClaim("scope", "movieapi.write"));
+            });
 
             //services
             //    .AddAuthentication("Bearer")

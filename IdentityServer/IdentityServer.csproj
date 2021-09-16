@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="IdentityServer4" Version="4.1.2" />
+    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.1" />
     <PackageReference Include="VeryGood.IdentityServer4.Dapper.Storage" Version="4.0.1" />
     <PackageReference Include="VeryGood.IdentityServer4.Storage.DatabaseScripts.DbUp" Version="4.0.1" />

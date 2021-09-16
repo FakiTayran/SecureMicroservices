@@ -13,7 +13,7 @@ namespace Movies.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class MoviesController : ControllerBase
     {
         private readonly MoviesAPIContext _context;
@@ -32,7 +32,7 @@ namespace Movies.API.Controllers
 
         // GET: api/Movies/5
         [HttpGet("{id}")]
-        [Authorize(Policy = "read")]
+        [Authorize(Policy = "read",AuthenticationSchemes ="Bearer")]
         public async Task<ActionResult<Movie>> GetMovie(int id)
         {
             var movie = await _context.Movie.FindAsync(id);

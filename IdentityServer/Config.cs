@@ -26,8 +26,8 @@ namespace IdentityServer
                 },
                  new Client
                 {
-                    ClientId ="movieClient2",
-                    ClientName="MovieApi2",
+                    ClientId ="movieclient2",
+                    ClientName="movieApi2",
                     AllowedGrantTypes = GrantTypes.ClientCredentials, // it is used by clients to obtain an access token outside of the context of a user
                     ClientSecrets =
                     {
@@ -47,7 +47,7 @@ namespace IdentityServer
                 new ApiResource("movieapi")
                 { 
                     Scopes = new List<string>{ "movieapi.read", "movieapi.write"},
-                    ApiSecrets = new List<Secret>{ new Secret ("ScopeSecret".Sha256()) }, //Client aware of this value
+                    ApiSecrets = new List<Secret>{ new Secret ("ScopeSecret") }, //Client aware of this value
                     UserClaims = new List<string>{ "role" }
                 }
             };

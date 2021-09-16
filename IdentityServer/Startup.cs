@@ -1,3 +1,4 @@
+using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.Dapper.Storage;
 using IdentityServer4.Dapper.Storage.DataLayer;
 using IdentityServer4.Models;
@@ -61,6 +62,15 @@ namespace IdentityServer
                     option.TokenCleanupInterval = 3600;
                 });
 
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+             .AddIdentityServerAuthentication(options =>
+             {
+                 options.Authority = "https://localhost:5005";
+                 options.ApiName = "movieapi";
+                 options.ApiSecret = "scopesecret";
+                 options.RequireHttpsMetadata = false;
+             });
+            //services.AddAuthorization();
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
@@ -72,7 +82,7 @@ namespace IdentityServer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IIdentityServerMigrations identityServerMigrations, IClientProvider _clientProvider,IApiResourceProvider _apiResourceProvider, IApiScopesProvider _apiScopesProvider)
         {
-            identityServerMigrations.UpgradeDatabase(true);
+            //identityServerMigrations.UpgradeDatabase(true);
             //_clientProvider.AddAsync(new Client
             //{
             //    ClientId = "movieclient2",
@@ -85,12 +95,13 @@ namespace IdentityServer
             //    AllowedScopes = { "movieapi.read" },
             //    AccessTokenType = AccessTokenType.Reference,
             //});
-            //_apiresourceprovider.addasync(new apiresource("movieapi")
+            //_apiResourceProvider.AddAsync(new ApiResource("movieapi")
             //{
-            //    scopes = new list<string> { "movieapi.read", "movieapi.write" },
-            //    apisecrets = new list<secret> { new secret("scopesecret".sha256()) }, //client aware of this value
-            //    userclaims = new list<string> { "role" }
+            //    Scopes = new List<string> { "movieapi.read", "movieapi.write" },
+            //    ApiSecrets = new List<Secret> { new Secret("scopesecret".Sha256()) }, //client aware of this value
+            //    UserClaims = new List<string> { "role" }
             //});
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -99,6 +110,9 @@ namespace IdentityServer
             }
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseIdentityServer();
 
             app.UseEndpoints(endpoints =>
