@@ -72,7 +72,7 @@ namespace IdentityServer
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
-                options.IssuerUri ="https://localhost:5005";
+                options.IssuerUri = "http://identityserver:5005";
             })
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddDeveloperSigningCredential()
