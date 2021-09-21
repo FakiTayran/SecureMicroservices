@@ -14,16 +14,21 @@ namespace IdentityServer
 
             {
                 new Client
-                { 
+                {
                     ClientId ="movieClient",
                     ClientName="Movie API",
-                    AllowedGrantTypes = GrantTypes.ClientCredentials, // it is used by clients to obtain an access token outside of the context of a user
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword, // it is used by clients to obtain an access token outside of the context of a user
                     ClientSecrets =
-                    { 
+                    {
                         new Secret("secret".Sha256())  //Client aware of this value
                     },
-                    AllowedScopes = {"movieapi.read","movieapi.write" },
-                    
+                    AllowedScopes = {
+                        "movieapi.read","movieapi.write",
+                     IdentityServerConstants.StandardScopes.OpenId,
+                         IdentityServerConstants.StandardScopes.Profile
+                    },
+                     AccessTokenType = AccessTokenType.Reference,
+                    RequireConsent = false
                 },
                  new Client
                 {
@@ -51,7 +56,7 @@ namespace IdentityServer
         public static IEnumerable<ApiResource> ApiResource => new ApiResource[]  //This is what we try to protect
             {
                 new ApiResource("movieapi")
-                { 
+                {
                     Scopes = new List<string>{ "movieapi.read", "movieapi.write"},
                     ApiSecrets = new List<Secret>{ new Secret ("ScopeSecret") }, //Client aware of this value
                     UserClaims = new List<string>{ "role" }

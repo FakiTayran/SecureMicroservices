@@ -16,21 +16,21 @@ namespace IdentityServer
     {
         public static void Main(string[] args)
         {
-            var host = CreateHostBuilder(args).Build();
+            CreateHostBuilder(args).Build().Run();
 
-            using (var scope = host.Services.CreateScope())
-            {
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                var user = new ApplicationUser
-                { 
-                    UserName = "tayran.ariduru@nilvera.com",
-                    Email = "tayran.ariduru@nilvera.com",
-                };
+            //using (var scope = host.Services.CreateScope())
+            //{
+            //    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<CustomIdentityUser>>();
+            //    var user = new CustomIdentityUser
+            //    { 
+            //        UserName = "tayran.ariduru@nilvera.com",
+            //        Email = "tayran.ariduru@nilvera.com",
+            //    };
 
-                userManager.CreateAsync(user, "Password1.").GetAwaiter().GetResult();
-            }
+            //    userManager.CreateAsync(user, "Password1.").GetAwaiter().GetResult();
+            //}
 
-                host.Run();
+            //    host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

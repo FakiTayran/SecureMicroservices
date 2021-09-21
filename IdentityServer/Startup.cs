@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -39,18 +40,18 @@ namespace IdentityServer
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = Configuration.GetConnectionString(name: "DefaultConnection");
+            services.AddDbContext<CustomIdentityDbContext>(options => options.UseSqlServer(connectionString));
 
 
             services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-                options.User.RequireUniqueEmail = true;
-
-                options.Password.RequireDigit = true;
-                options.Password.RequiredLength = 8;
-                options.Password.RequireLowercase = true;
+                options.User.RequireUniqueEmail = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = true;
+                options.Password.RequireUppercase = false;
             })
                   .AddDapperStores(options =>
                   {
@@ -58,10 +59,10 @@ namespace IdentityServer
                       options.DbSchema = "dbo";
                   });
 
-            services.AddIdentityDbUpDatabaseScripts(options => {
-                options.ConnectionString = connectionString;
-                options.DbSchema = "dbo";
-            });
+            //services.AddIdentityDbUpDatabaseScripts(options => {
+            //    options.ConnectionString = connectionString;
+            //    options.DbSchema = "dbo";
+            //});
 
             services.AddIdentityServer(options =>
             {
@@ -75,7 +76,8 @@ namespace IdentityServer
                 .AddDeveloperSigningCredential()
                 .AddInMemoryClients(Config.Clients)
                 .AddInMemoryApiResources(Config.ApiResource)
-                .AddInMemoryApiScopes(Config.ApiScopes).AddDbUpDatabaseScripts(options =>
+                .AddInMemoryApiScopes(Config.ApiScopes)
+                .AddDbUpDatabaseScripts(options =>
                 {
                     options.ConnectionString = connectionString;
                     options.DbSchema = "dbo";
@@ -113,22 +115,22 @@ namespace IdentityServer
             //var connectionString = Configuration.GetConnectionString(name: "DefaultConnection");
             //var identityMigrations = new AspNetCore.Identity.DatabaseScripts.DbUp.Migrations(connectionString, "dbo");
             //var identityResult = identityMigrations.UpgradeDatabase();
-            identityServerMigrations.UpgradeDatabase(true);
-            _clientProvider.AddAsync(new Client
-            {
-                ClientId = "movieclient2",
-                ClientName = "movieApi2",
-                AllowedGrantTypes = GrantTypes.ResourceOwnerPassword, // it is used by clients to obtain an access token outside of the context of a user
-                AllowedScopes = {
-                         "movieapi.read",
-                         IdentityServerConstants.StandardScopes.OpenId,
-                         IdentityServerConstants.StandardScopes.Profile
-                     },
-                AccessTokenType = AccessTokenType.Reference,
-                RequireConsent = false,
-                RequireClientSecret = false,
-                
-            });
+            //identityServerMigrations.UpgradeDatabase(true);
+            //_clientProvider.AddAsync(new Client
+            //{
+            //    ClientId = "movieclient2",
+            //    ClientName = "movieApi2",
+            //    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword, // it is used by clients to obtain an access token outside of the context of a user
+            //    AllowedScopes = {
+            //             "movieapi.read",
+            //             IdentityServerConstants.StandardScopes.OpenId,
+            //             IdentityServerConstants.StandardScopes.Profile
+            //         },
+            //    AccessTokenType = AccessTokenType.Reference,
+            //    RequireConsent = false,
+            //    RequireClientSecret = false,
+
+            //});
             //_apiResourceProvider.AddAsync(new ApiResource("movieapi")
             //{
             //    Scopes = new List<string> { "movieapi.read", "movieapi.write" },
