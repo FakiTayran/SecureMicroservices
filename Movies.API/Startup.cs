@@ -39,7 +39,7 @@ namespace Movies.API
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "nSoft.Gateway", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Movie Api", Version = "v1" });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -78,6 +78,13 @@ namespace Movies.API
                  options.ApiSecret = "scopesecret";
                  options.RequireHttpsMetadata = false;
              });
+
+            services.AddAuthorization(x =>
+            {
+                x.AddPolicy("read", policy => policy.RequireClaim("scope", "movieapi.read"));
+                x.AddPolicy("write", policy => policy.RequireClaim("scope", "movieapi.write"));
+            });
+
             //services.AddAuthentication("Bearer")
             //.AddOAuth2Introspection("Bearer", options =>
             // {
@@ -86,12 +93,6 @@ namespace Movies.API
             //     options.ClientSecret = "secret2";
             // });
             //services.AddAuthorization();
-
-            services.AddAuthorization(x =>
-            {
-                x.AddPolicy("read", policy => policy.RequireClaim("scope", "movieapi.read"));
-                x.AddPolicy("write", policy => policy.RequireClaim("scope", "movieapi.write"));
-            });
 
             //services
             //    .AddAuthentication("Bearer")

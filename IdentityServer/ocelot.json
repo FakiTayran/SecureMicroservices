@@ -1,0 +1,37 @@
+{
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:5005"
+  },
+  "Routes": [
+    {
+      "DangerousAcceptAnyServerCertificateValidator": true,
+      "UpstreamPathTemplate": "/movie/{everything}",
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "https",
+      "RouteIsCaseSensitive": false,
+      "SwaggerKey": "movie",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5001
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "mlSkyfClm9",
+        "AllowedScopes": [ "movieapi.read", "movieapi.write" ]
+      }
+    },
+  ],
+  "SwaggerEndPoints": [
+    {
+      "Key": "movie",
+      "Config": [
+        {
+          "Name": "Movie API",
+          "Version": "v1",
+          "Url": "https://localhost:5001/swagger/v1/swagger.json"
+        }
+      ]
+    }
+  ]
+}

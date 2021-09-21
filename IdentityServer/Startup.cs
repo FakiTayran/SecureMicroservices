@@ -18,6 +18,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Ocelot.DependencyInjection;
+using Ocelot.Middleware;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,9 +93,9 @@ namespace IdentityServer
                     option.EnableTokenCleanup = true;
                     option.TokenCleanupInterval = 3600;
                 });
-
+            var authenticationProviderKey = "mlSkyfClm9";
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-             .AddIdentityServerAuthentication(options =>
+             .AddIdentityServerAuthentication(authenticationProviderKey,options =>
              {
                  options.Authority = "https://localhost:5005";
                  options.ApiName = "movieapi";
@@ -102,6 +104,8 @@ namespace IdentityServer
              });
             services.AddAuthorization();
             services.AddControllers();
+            services.AddOcelot(Configuration);
+            services.AddSwaggerForOcelot(Configuration);
 
             services.AddSwaggerGen(c =>
             {
@@ -141,8 +145,6 @@ namespace IdentityServer
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Server.API v1"));
             }
 
             app.UseRouting();
@@ -155,6 +157,14 @@ namespace IdentityServer
             {
                 endpoints.MapControllers();
             });
+            app.UseSwagger();
+            app.UseSwaggerForOcelotUI(opt =>
+            {
+                opt.PathToSwaggerGenerator = "/swagger/docs";
+                opt.SwaggerEndpoint("/swagger/v1/swagger.json", "Gateway v1");
+            })
+                .UseOcelot()
+                .Wait();
         }
     }
 }
