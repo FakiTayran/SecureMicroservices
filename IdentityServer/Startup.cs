@@ -97,7 +97,7 @@ namespace IdentityServer
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
              .AddIdentityServerAuthentication(authenticationProviderKey,options =>
              {
-                 options.Authority = "https://localhost:5005";
+                 options.Authority = "http://identityserver:5005";
                  options.ApiName = "movieapi";
                  options.ApiSecret = "scopesecret";
                  options.RequireHttpsMetadata = false;

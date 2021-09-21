@@ -1,18 +1,18 @@
 {
   "GlobalConfiguration": {
-    "BaseUrl": "https://localhost:5005"
+    "BaseUrl": "http://localhost:5005"
   },
   "Routes": [
     {
       "DangerousAcceptAnyServerCertificateValidator": true,
       "UpstreamPathTemplate": "/movie/{everything}",
       "DownstreamPathTemplate": "/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "RouteIsCaseSensitive": false,
       "SwaggerKey": "movie",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
+          "Host": "movieapi",
           "Port": 5001
         }
       ],
@@ -29,7 +29,7 @@
         {
           "Name": "Movie API",
           "Version": "v1",
-          "Url": "https://localhost:5001/swagger/v1/swagger.json"
+          "Url": "http://movieapi:5001/swagger/v1/swagger.json"
         }
       ]
     }
